@@ -89,8 +89,19 @@ class TomogramPlanner(object):
 
     def plan(self, start_pos, end_pos):
         # TODO: calculate slice index. By default the start and end pos are all at slice 0
-        self.start_idx[1:] = self.pos2idx(start_pos)
-        self.end_idx[1:] = self.pos2idx(end_pos)
+        if start_pos.shape[0] == 3:
+            self.start_idx[1:] = self.pos2idx(start_pos[:2])
+            self.start_idx[0] = int(start_pos[2])
+        else:
+            self.start_idx[1:] = self.pos2idx(start_pos)
+            self.start_idx[0] = 0
+
+        if end_pos.shape[0] == 3:
+            self.end_idx[1:] = self.pos2idx(end_pos[:2])
+            self.end_idx[0] = int(end_pos[2])
+        else:
+            self.end_idx[1:] = self.pos2idx(end_pos)
+            self.end_idx[0] = 0
 
         self.planner.plan(self.start_idx, self.end_idx, True)
         path_finder: a_star.Astar = self.planner.get_path_finder()
