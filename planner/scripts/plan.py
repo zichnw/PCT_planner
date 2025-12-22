@@ -52,6 +52,18 @@ class PCTPlanner(Node):
         self.planner = TomogramPlanner(cfg)
         self.planner.loadTomogram(self.tomo_file) # 只加载一次地图
 
+        # 修正初始坐标：假设 plan.py 中硬编码的 z 是层级索引，我们需要将其转换为物理高度
+        # 这样才能与 Rviz 点击的物理高度逻辑保持一致，并适配 planner_wrapper 的计算公式
+        if self.start_pos.shape[0] == 3:
+            layer_idx = self.start_pos[2]
+            self.start_pos[2] = layer_idx * self.planner.slice_dh + self.planner.slice_h0
+            self.get_logger().info(f"Converted Start Pos Z from Layer {layer_idx} to Height {self.start_pos[2]:.2f}")
+
+        if self.end_pos.shape[0] == 3:
+            layer_idx = self.end_pos[2]
+            self.end_pos[2] = layer_idx * self.planner.slice_dh + self.planner.slice_h0
+            self.get_logger().info(f"Converted End Pos Z from Layer {layer_idx} to Height {self.end_pos[2]:.2f}")
+
         self.pct_plan()
 
     def goal_callback(self, msg):
