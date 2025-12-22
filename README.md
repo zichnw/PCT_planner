@@ -10,20 +10,6 @@
 
 其他内容参照原文
 
-## Alex Change log
-
-- 2025-11-06: feat: ROS2 humble.
-- 2025-12-13: feat: ROS2 package, update dependencies.
-  详细见: [build_3rdparty.sh](./build_3rdparty.sh)
-  3rdparty libraries:
-      - cJSON-1.7.19
-      - gtsam-4.2
-      - osqp-1.0.0  
-      - pcl-1.15.1
-- 2025-12-14: feat: add Theta* algorithm.
-
-see [Bilibili BV15742zrE7h](https://www.bilibili.com/video/BV15742zrE7h)
-
 ## Overview
 
 This is an implementation of paper **Efficient Global Navigational Planning in 3-D Structures Based on Point Cloud Tomography** (accepted by TMECH).
@@ -93,6 +79,7 @@ To plan in a scenario, first you need to construct the scene tomogram using the 
 - In **tomography/scripts/**, run **tomography.py** with the **--scene** argument:
 
 ```bash
+conda activate pct_planner
 cd tomography/scripts/
 python3 tomography.py --scene Spiral
 ```
@@ -105,9 +92,15 @@ After the tomogram is constructed, you can run the trajectory generation example
 - In **planner/scripts/**, run **plan.py** with the **--scene** argument:
 
 ```bash
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/YOUR/DIRECTORY/TO/PCT_planner/planner/lib/3rdparty/gtsam-4.1.1/install/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/zichen/PCT_planner/planner/lib/3rdparty/gtsam-4.1.1/install/lib
+conda activate pct_planner
 cd planner/scripts/
 python3 plan.py --scene Spiral
+```
+
+# 终端3：点云坐标选择
+```bash
+ros2 topic echo /clicked_point
 ```
 
 - The generated trajectory is visualized as ROS Path message in RViz.
