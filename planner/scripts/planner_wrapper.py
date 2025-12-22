@@ -91,18 +91,25 @@ class TomogramPlanner(object):
         # TODO: calculate slice index. By default the start and end pos are all at slice 0
         if start_pos.shape[0] == 3:
             self.start_idx[1:] = self.pos2idx(start_pos[:2])
-            self.start_idx[0] = int(start_pos[2])
+            # 将物理高度转换为层级索引
+            self.start_idx[0] = int(round((start_pos[2] - self.slice_h0) / self.slice_dh))
+            # 限制索引范围，防止越界
+            self.start_idx[0] = max(0, min(self.start_idx[0], self.n_slice - 1))
         else:
             self.start_idx[1:] = self.pos2idx(start_pos)
             self.start_idx[0] = 0
 
         if end_pos.shape[0] == 3:
             self.end_idx[1:] = self.pos2idx(end_pos[:2])
-            self.end_idx[0] = int(end_pos[2])
+            # 将物理高度转换为层级索引
+            self.end_idx[0] = int(round((end_pos[2] - self.slice_h0) / self.slice_dh))
+            # 限制索引范围，防止越界
+            self.end_idx[0] = max(0, min(self.end_idx[0], self.n_slice - 1))
         else:
             self.end_idx[1:] = self.pos2idx(end_pos)
             self.end_idx[0] = 0
 
+        print(f"Planning from Layer {self.start_idx[0]} to Layer {self.end_idx[0]}")
         self.planner.plan(self.start_idx, self.end_idx, True)
         path_finder: a_star.Astar = self.planner.get_path_finder()
         path = path_finder.get_result_matrix()
