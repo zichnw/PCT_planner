@@ -53,6 +53,9 @@ class TomogramPlanner(object):
         elev_c = tomogram[4]
         elev_c = np.nan_to_num(elev_c, nan=1e6)
 
+        self.elev_g = elev_g
+        self.elev_c = elev_c
+
         self.initPlanner(trav, trav_gx, trav_gy, elev_g, elev_c)
         
     def initPlanner(self, trav, trav_gx, trav_gy, elev_g, elev_c):
@@ -91,14 +94,14 @@ class TomogramPlanner(object):
         # TODO: calculate slice index. By default the start and end pos are all at slice 0
         if start_pos.shape[0] == 3:
             self.start_idx[1:] = self.pos2idx(start_pos[:2])
-            self.start_idx[0] = int(start_pos[2])
+            self.start_idx[0] = self.get_slice_from_3d(start_pos)
         else:
             self.start_idx[1:] = self.pos2idx(start_pos)
             self.start_idx[0] = 0
 
         if end_pos.shape[0] == 3:
             self.end_idx[1:] = self.pos2idx(end_pos[:2])
-            self.end_idx[0] = int(end_pos[2])
+            self.end_idx[0] = self.get_slice_from_3d(end_pos)
         else:
             self.end_idx[1:] = self.pos2idx(end_pos)
             self.end_idx[0] = 0
@@ -128,6 +131,32 @@ class TomogramPlanner(object):
         traj_3d = transTrajGrid2Map(self.map_dim, self.center, self.resolution, traj_3d)
 
         return traj_3d
+    
+    def get_slice_from_3d(self, pos_3d):
+        x, y, z = pos_3d
+        idx = self.pos2idx(np.array([x, y]))
+        iy, ix = int(idx[0]), int(idx[1])
+
+        if not (0 <= iy < self.map_dim[0] and 0 <= ix < self.map_dim[1]):
+            return 0
+
+        best_slice = 0
+        min_dist = float('inf')
+
+        for s in range(self.n_slice):
+            g_h = self.elev_g[s, iy, ix]
+            
+            # Filter out invalid ground values
+            if g_h < -90.0:
+                continue
+
+            dist = abs(z - g_h)
+            
+            if dist < min_dist:
+                min_dist = dist
+                best_slice = s
+
+        return best_slice
     
     def pos2idx(self, pos):
         pos = pos - self.center
