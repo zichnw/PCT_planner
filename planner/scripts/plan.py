@@ -144,9 +144,9 @@ if __name__ == '__main__':
             start_pos = np.array([-16.0, -6.0], dtype=np.float32)
             end_pos = np.array([-26.0, -5.0], dtype=np.float32)
         case 'Building':
-            tomo_file = 'building2_9'
-            start_pos = np.array([-5.5, 6, 0.5], dtype=np.float32)
-            end_pos = np.array([2, -3, 7], dtype=np.float32)
+            tomo_file = 'building'
+            start_pos = np.array([-5.29, 6.01, 0.06], dtype=np.float32)
+            end_pos = np.array([4.21, 2.81, 4.53], dtype=np.float32)
         case 'Plaza':
             tomo_file = 'plaza3_10'
             start_pos = np.array([0.0, 0.0], dtype=np.float32)
