@@ -81,7 +81,7 @@ To plan in a scenario, first you need to construct the scene tomogram using the 
 ```bash
 conda activate pct_planner
 cd tomography/scripts/
-python3 tomography.py --scene Spiral
+python3 tomography.py --scene Building
 ```
 
 - The generated tomogram is visualized as ROS PointCloud2 message in RViz and saved in **rsc/tomogram/**.
@@ -95,10 +95,10 @@ After the tomogram is constructed, you can run the trajectory generation example
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/zichen/PCT_planner/planner/lib/3rdparty/gtsam-4.1.1/install/lib
 conda activate pct_planner
 cd planner/scripts/
-python3 plan.py --scene Spiral
+python3 plan.py --scene Building
 ```
 
-# 终端3：点云坐标选择
+## 终端3：点云坐标选择
 ```bash
 ros2 topic echo /clicked_point
 ```
@@ -111,3 +111,10 @@ The source code is released under [GPLv2](http://www.gnu.org/licenses/) license.
 
 For commercial use, please contact Bowen Yang [byangar@connect.ust.hk](mailto:byangar@connect.ust.hk).
 
+
+## ddd
+- 当前程序已修改为支持三维目标的多层导航
+- 程序启动时会有默认的起始点，可以根据点云坐标选择来修改初始目标 `./planner/scripts/plan.py`
+- 实时发布目标位置可根据rviz publish point进行更新；也可更改相关部分代码符合任务逻辑
+- 测试使用的点云地图为`building.pcd`
+- 该导航需要预建地图并对配置参数做相应修改，见`./tomography/config/scene_~~.py`
